@@ -1,5 +1,5 @@
 
-0;95;0cCC=gcc
+CC=gcc
 CFLAGS=-Wall -Werror -ggdb3
 
 default: trie.c
