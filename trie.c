@@ -1,11 +1,14 @@
 #include <assert.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <stdbool.h>
+#include <string.h>
 
 typedef struct Trie Trie;
 
 struct Trie{
-  Trie* children;
+  bool leaf;
+  Trie** children;
 };
 
 // TODO: Implement
@@ -17,36 +20,61 @@ struct Trie{
 /*   } */
 /* } */
 
-#define TRIE_NODE_CAP 1024
-size_t trie_node_count = 0;
-
 Trie* alloc_node(void) {
-  assert(trie_node_count < TRIE_NODE_CAP);
-
   Trie* node = (Trie*)malloc(sizeof(Trie));
-  node -> children = NULL;
-
-  trie_node_count += 1;
-
+  // TODO: Look into this
+  node -> children = malloc(sizeof(char));
+  node -> leaf = false;
   return node;
 }
 
 void insert(Trie* root, const char* text) {
   assert(root != NULL && text != NULL);
 
+  /* printf("%s\n", text); */
+
   if (*text == '\0') {
+    root -> leaf = true;
     return;
   }
 
   size_t index = (size_t)* text;
-
-  if (&root -> children[index] == NULL) {
-    // TODO: Look into *alloc_node()
-    root -> children[index] = *alloc_node();
+  if (root -> children[index] == NULL) {
+    printf("%s\n", text);
+    root -> children[index] = alloc_node();
   }
 
+  /* printf("%lu\n", (size_t)sizeof(text)); */
+  /* if (root -> children[index] == NULL) { */
+  /*   printf("%s\n", text); */
+  /*   root -> children = alloc_node(26); */
+  /* } */
+
+  /* if (root -> children[index] == NULL) { */
+  /*   // TODO: Look into *alloc_node() */
+  /*   root -> children[index] = *alloc_node(50); */
+  /* } */
+
   // TODO: Look into &root
-  insert(&root -> children[index], text + 1);
+  insert(root -> children[index], text + 1);
+}
+
+void print_trie(Trie* root, const char* word) {
+  int i;
+
+  if (root == NULL) {
+    return;
+  }
+
+  if (root -> leaf == true) {
+    printf("%s\n", word);
+  }
+  
+  for (i = 0; i < 26; ++i) {
+    if (&root -> children[i] != NULL) {
+      print_trie(root -> children[i], word);
+    }
+  }
 }
 
 /* void free_trie(Trie* root) { */
@@ -60,7 +88,10 @@ void insert(Trie* root, const char* text) {
 
 int main() {
   Trie* root = alloc_node();
+  insert(root, "Hi");
   insert(root, "Hello");
-  printf("Hello World");
+  insert(root, "This");
+  /* print_trie(root, "Hi"); */
+  /* printf("Hello World\n"); */
   return 0;
 }
